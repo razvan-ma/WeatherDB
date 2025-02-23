@@ -1,0 +1,57 @@
+services:
+  api:
+    build:
+      context: ./api
+    ports:
+      - "5000:5000"        # Map Flask server port
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=weatherdb
+      - DB_USER=user
+      - DB_PASSWORD=password
+    depends_on:
+      - db                 # Ensure db service starts before api
+    networks:
+      - api-network        # Connect API to its own network
+      - db-network         # Connect to db-network for db communication
+    restart: always        # Ensure API service restarts if it crashes
+
+  db:
+    image: postgres:13
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: weatherdb
+    ports:
+      - "5432:5432"        # Expose PostgreSQL port
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql  # Database initialization
+    networks:
+      - db-network         # db will be on its own network
+    restart: always        # Ensure PostgreSQL service restarts if it crashes
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "80:80"             # Expose pgAdmin web interface
+    depends_on:
+      - db
+    networks:
+      - pgadmin-network     # Connect pgAdmin to its own network
+      - db-network          # Connect to db-network for db communication
+    restart: always        # Ensure pgAdmin service restarts if it crashes
+
+volumes:
+  db-data:                  # Persistent volume for PostgreSQL
+
+networks:
+  api-network:              # Separate network for API
+  pgadmin-network:          # Separate network for pgAdmin
+  db-network:               # Shared network for db communication

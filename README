@@ -1,0 +1,6 @@
+Am numit cheile din baza de date in idoras si idtara, pentru ca nici in enunt 
+nu exista o consistenta in denumiri asa ca am luat denumirile din consola de postman.
+
+Am incercat sa folosesc variabile pentru docker compose dar tot ce am incercat nu a mers
+(https://forums.docker.com/t/docker-compose-not-seeing-environment-variables-on-the-host/11837/7)
+am pus incercarea in celalalt fisier docker-compose.
